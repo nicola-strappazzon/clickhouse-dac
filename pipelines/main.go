@@ -34,3 +34,8 @@ func (p *Pipelines) Load(in string) error {
 
 	return yaml.Unmarshal(yamlFile, p)
 }
+
+func (p *Pipelines) SetParents() {
+	p.Table.Parent = p
+	p.View.Parent = p
+}

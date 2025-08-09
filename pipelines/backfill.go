@@ -4,18 +4,6 @@ import (
 	"github.com/nicola-strappazzon/clickhouse-dac/strings"
 )
 
-func (p Pipelines) PopulateTableName() string {
-	if strings.IsNotEmpty(p.Table.Name) {
-		return p.Table.Name
-	}
-
-	if strings.IsNotEmpty(p.View.To) {
-		return p.View.To
-	}
-
-	return ""
-}
-
 func (p Pipelines) Backfill() Pipelines {
 	if !p.View.Materialized {
 		return p
@@ -25,29 +13,29 @@ func (p Pipelines) Backfill() Pipelines {
 		return p
 	}
 
-	if p.View.Populate.Type != PopulateBackFill {
+	if !p.View.Populate.Type.IsBackFill() {
 		return p
 	}
 
-	if strings.IsEmpty(p.Database.Name) {
+	if p.Database.Name.IsEmpty() {
 		return p
 	}
 
-	if strings.IsEmpty(p.Table.Name) {
+	if p.View.To.IsEmpty() {
 		return p
 	}
 
 	p.Statement = strings.Builder{}
 	p.Statement.WriteString("INSERT INTO ")
-	p.Statement.WriteString(p.Database.Name)
+	p.Statement.WriteString(p.Database.Name.ToString())
 	p.Statement.WriteString(".")
-	p.Statement.WriteString(p.PopulateTableName())
+	p.Statement.WriteString(p.View.To.ToString())
 
-	if strings.IsNotEmpty(p.View.Columns.WithTypes()) {
+	if p.View.Columns.IsNotEmpty() {
 		p.Statement.WriteString(" (")
 		p.Statement.WriteString(p.View.Columns.WithoutTypes())
 		p.Statement.WriteString(") ")
-	} else if strings.IsNotEmpty(p.Table.Columns.WithTypes()) {
+	} else if p.Table.Columns.IsNotEmpty() {
 		p.Statement.WriteString(" (")
 		p.Statement.WriteString(p.Table.Columns.WithoutTypes())
 		p.Statement.WriteString(") ")
