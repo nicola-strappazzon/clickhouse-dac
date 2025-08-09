@@ -29,7 +29,7 @@ func NewCommand() *cobra.Command {
 }
 
 func Run() error {
-	fmt.Println("--> Starting to backfill the table:", pl.PopulateTableName())
+	fmt.Println("--> Starting to backfill the table:", pl.View.To)
 
 	if pl.Config.SQL {
 		fmt.Println(pl.Backfill().DML())

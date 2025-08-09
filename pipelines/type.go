@@ -1,5 +1,9 @@
 package pipelines
 
+import (
+	"github.com/nicola-strappazzon/clickhouse-dac/strings"
+)
+
 type PopulateType string
 
 const (
@@ -12,4 +16,20 @@ type Populate struct {
 	// CutOff string       `yaml:"cutoff"`
 	Skip bool         `yaml:"skip"`
 	Type PopulateType `yaml:"type"`
+}
+
+func (p PopulateType) ToString() string {
+	return string(p)
+}
+
+func (p PopulateType) IsEmpty() bool {
+	return strings.IsEmpty(p.ToString())
+}
+
+func (p PopulateType) IsNative() bool {
+	return p == PopulateNative
+}
+
+func (p PopulateType) IsBackFill() bool {
+	return p == PopulateBackFill
 }
